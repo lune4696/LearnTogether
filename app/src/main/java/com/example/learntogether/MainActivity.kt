@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.learntogether.ui.theme.LearnTogetherTheme
+import kotlin.io.encoding.Base64
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +42,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     //ComposeArticle()
-                    TaskCompletion()
+                    //TaskCompletion()
+                    QuadGrid()
                 }
             }
         }
@@ -203,3 +206,79 @@ fun TaskCompletionComment(modifier: Modifier = Modifier) {
 }
 
 // http://developer.android.com/codelabs/basic-android-kotlin-compose-composables-practice-problems page.4
+
+@Composable
+@Preview(showBackground = true)
+fun QuadGrid(modifier: Modifier = Modifier) {
+    // Row -> Column なので、分割順序は「左右 -> 上下」となる
+    // - weight は"親に対する"分割比率なので、この順序に従っていることに注意
+    Row (
+        modifier = modifier.fillMaxSize(), // 親がないので分割比率もない
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        Column (
+            modifier = modifier.weight(weight = 0.6F), // Row に対する Column の 水平分割比率
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ){
+            // 左上
+            GridCell(
+                color = colorRGB(0xEA, 0xDD, 0xFF)(0xFF),
+                title = stringResource(R.string.grid_left_top_title),
+                body = stringResource(R.string.grid_left_top_body),
+                modifier = modifier.weight(weight = 0.3F), // Column に対する Cell の垂直分割比率
+            )
+            // 左下
+            GridCell(
+                color = colorRGB(0xB6, 0x9D, 0xF8)(0xFF),
+                title = stringResource(R.string.grid_left_bottom_title),
+                body = stringResource(R.string.grid_left_bottom_body),
+                modifier = modifier.weight(weight = 0.5F),
+            )
+        }
+        Column (
+            modifier = modifier.weight(weight = 0.4F),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ){
+            // 右上
+            GridCell(
+                color = colorRGB(0xD0, 0xBC, 0xFF)(0xFF),
+                title = stringResource(R.string.grid_right_top_title),
+                body = stringResource(R.string.grid_right_top_body),
+                modifier = modifier.weight(weight = 0.7F),
+            )
+            // 右下
+            GridCell(
+                color = colorRGB(0xF6, 0xED, 0xFF)(0xFF),
+                title = stringResource(R.string.grid_right_bottom_title),
+                body = stringResource(R.string.grid_right_bottom_body),
+                modifier = modifier.weight(weight = 0.5F),
+            )
+        }
+    }
+}
+
+@Composable
+fun GridCell(color: Color, title: String, body: String, modifier: Modifier = Modifier) {
+    Column (
+        modifier = modifier
+            .background(color)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = title,
+            color = Color.Black,
+            fontWeight = Bold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = 16.dp),
+        )
+        Text(
+            text = body,
+            color = Color.Black,
+            textAlign = TextAlign.Justify,
+        )
+    }
+}
